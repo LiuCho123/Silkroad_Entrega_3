@@ -1,0 +1,354 @@
+html {
+    box-sizing: border-box;
+}
+
+*,
+::before,
+*::after {
+    box-sizing: inherit;
+    margin: 0;
+    padding: 0;
+}
+.bg-custom-dark{
+    background-color: #1a1a1a;
+}
+.navbar-logo{
+    height: 120px;
+    width: auto;
+    margin-right: 20px;
+}
+.navbar-page-icon{
+    display: none;
+    height: 40px;
+    width: auto;
+}
+.navbar-nav .nav-link img{
+    height: 80px;
+    width: auto;
+    opacity: 0.6;
+    transition: all 0.3s ease-in-out;
+    margin-left: 10px;
+}
+.navbar-nav .nav-item.active .nav-link img,
+.navbar-nav .nav-link:hover img{
+    opacity: 1;
+    transform: scale(1.1);
+}
+.navbar-nav .nav-link{
+    font-weight: bold;
+    color: #b0b0b0;
+    display: flex;
+    align-items: center;
+}
+.navbar-nav .nav-link:hover{
+    color: #fff;
+}
+.navbar-nav{
+    width: 100%;
+    display: flex;
+    align-items: center;
+}
+.navbar .container-fluid{
+    border-top: 3px solid #d8d8d8;
+    border-bottom: 3px solid #d8d8d8;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+.navbar .container-fluid .navbar-nav{
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.navbar .container-fluid .navbar-nav .nav-item{
+    margin: 0 10px;
+}
+.navbar .container-fluid .navbar-nav .nav-item .nav-link{
+    color: #b0b0b0;
+    font-weight: bold;
+    font-size: 1.1em;
+}
+.cerrarSesion{
+    margin-left: auto;
+}
+@media(max-width: 991px){
+    .navbar-logo {display: none;}
+    .navbar-page-icon{display: none; height: 40px; width: auto;}
+    .page-foro .foro-icon{display: block;}
+    .page-guia .guia-icon{display: block;}
+    .page-checklist .checklist-icon{display: block;}
+    .page-ranking .ranking-icon{display: block;}
+    .page-trivia .trivia-icon{display: block;}
+
+    .navbar-nav{
+        border-top: none;
+        border-bottom: none;
+        padding: 10px 0;
+        width: auto;
+    }
+
+    .cerrarSesion{
+        margin-left: 0;
+    }
+}
+body {
+    background-image: url(../img/Fondo.png);
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: fixed;
+    background-size: cover;
+    background-color: #1a1a1a;
+}
+.body-main{
+    background-image: url(../img/Fondo.png);
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: fixed;
+    background-size: cover;
+    background-color: #1a1a1a;
+
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    padding: 4rem 1rem;
+}
+.login-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.login-main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+.login-header img,
+.login-main img {
+    max-width: 100%;
+    height: auto;
+}
+
+.login-title {
+    color: white
+}
+
+@media(max-width: 600px) {
+    .login-title {
+        font-size: 1.5em;
+        text-align: center;
+    }
+}
+
+.botones {
+    display: flex;
+    color: white;
+    justify-content: space-between;
+    width: 90%;
+    max-width: 400px;
+}
+
+.boton-hollow {
+    font-size: 22px;
+    padding: 12px 24px;
+    border-width: 4px;
+}
+
+.return-main {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+}
+.return-main img{
+    width: 180px;
+    max-width: 40vw;
+    height: auto;
+}
+.return-main a {
+    transition: opacity 0.2s ease-in-out;
+}
+
+.return-main a:hover {
+    opacity: 0.8;
+}
+.inicioSesion{
+    width: 90%;
+    max-width: 450px;
+    padding: 30px;
+    background-color: rgba(10, 10, 10, 0.7);
+    border: 3px solid #555;
+    border-radius: 10px;
+}
+.inicioSesion h1{
+    color: white;
+    text-align: center;
+    margin-bottom: 30px;
+    font-weight: bold;
+}
+.inicioSesion h2{
+    color: white;
+    text-align: center;
+    margin-bottom: 30px;
+    font-weight: bold;
+}
+.form-label{
+    color:white;
+    margin-bottom: 8px;
+    display: block;
+}
+.inputIcon{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-direction: row-reverse;
+}
+.inputIcon img{
+    width: 40px;
+    height: 40px;
+} 
+.mensaje-error{
+    color: red;
+    font-weight: bold;
+    margin-bottom: 15px;
+    text-align: center;
+    min-height: 1.2em;
+    transition: all 0.3 ease;
+}
+.toggle-password-icon{
+    cursor: pointer;
+}
+.toggle-password-icon.icon-active{
+    opacity: 0.5;
+    transform: scale(0.95);
+    transition: all 0.2s ease;
+}
+.foro-container{
+    padding: 30px;
+    background-color: rgba(10, 10, 10, 0.8);
+    border: 1px solid #555;
+    border-radius: 15px;
+    color: white;
+}
+.foro-container .d-flex h1 {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    min-width: 0;
+}
+.foro-header{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+.foro-header h1{
+    margin: 0;
+}
+.tabla-hilos{
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    font-size: 1rem;
+    table-layout: fixed;
+}
+.tabla-hilos th{
+    padding: 15px;
+    border-bottom: 2px solid #888;
+    vertical-align: middle;
+}
+.tabla-hilos td{
+    padding: 20px 15px;
+    border-bottom: 1px solid #444;
+    vertical-align: middle;
+}
+.tabla-hilos td, .tabla-hilos th{
+    word-wrap: break-word;
+}
+.tabla-hilos tbody tr:hover{
+    background-color: rgba(255, 255, 255, 0.05);
+}
+.tabla-hilos a{
+    color: #f0f0f0;
+    text-decoration: none;
+    font-weight: bold;
+}
+.tabla-hilos small{
+    color: #aaa;
+    font-size: 0.8em;
+}
+.post{
+    background-color: rgba(0, 0, 0, 0.2);
+    border: 1px solid #444;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;;
+}
+.post-original{
+    background-color: rgba(0, 0, 0, 0.2);
+    border: 5px solid #777;
+    border-radius: 15px;
+    padding: 25px;
+    margin-bottom: 40px;
+}
+.post-autor{
+    font-weight: bold;
+    color: #f0f0f0;
+    margin-bottom: 10px;
+}
+.post-contenido{
+    margin-bottom: 15px;
+    line-height: 1.6;
+    word-wrap: break-word;
+
+}
+.post-fecha{
+    font-size: 0.8em;
+    color: #aaa;
+    text-align: right;
+}
+.label-respuesta{
+    font-size: 1.75rem;
+    font-weight: bold;
+    color: white;
+}
+.trivia-container{
+    padding:30px;
+    background-color: rgba(10, 10, 10, 0.8);
+    border: 5px solid #555;
+    border-radius: 15px;
+    color: white;
+    max-width: 800px;
+    margin: auto;
+}
+#pregunta-trivia{
+    font-size: 1.8rem;
+    font-weight: bold;
+}
+.btn-respuesta{
+    background-color: #2a2a2a;
+    border: 5px solid #555;
+    color: white;
+    padding: 15px;
+    text-align: left;
+    font-size: 1.1rem;
+    transition: all 0.2s ease;
+}
+.btn-respuesta:hover{
+    background-color: #444;
+    border-color: #888;
+}
+.btn-respuesta.correcta{
+    background-color: #28a745 !important;
+    color: white !important;
+    border-color:#28a745 !important;
+}
+.btn-respuesta.incorrecta{
+    background-color: #dc3545 !important;
+    color: white !important;
+    border-color:#dc3545 !important;
+}
