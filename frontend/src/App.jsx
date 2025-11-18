@@ -15,6 +15,7 @@ import ChecklistPage from './paginas/Checklist';
 import GuiaPage from './paginas/Guia';
 import RankingPage from './paginas/Ranking.jsx';
 import { ChecklistProvider } from './data/ChecklistContext';
+import {AuthProvider} from "./data/AuthContext.jsx";
 const api_url = "http://demo0658844.mockable.io";
 
 function App() {
@@ -47,6 +48,7 @@ function App() {
 
   return (
     <BrowserRouter>
+        <AuthProvider>
       <ChecklistProvider>
         <Routes>
           <Route path="/" element={<HomePage />} />
@@ -69,6 +71,7 @@ function App() {
           </Route>
         </Routes>
       </ChecklistProvider>
+        </AuthProvider>
     </BrowserRouter>
   );
 }
