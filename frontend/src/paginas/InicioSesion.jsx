@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import {useAuth} from "../data/AuthContext.jsx";
 
-const api_url = "http://demo0658844.mockable.io";
+const API_URL = "http://localhost:8080/api/usuarios";
 
 function InicioSesion() {
     const [identifier, setIdentifier] = useState('');
@@ -11,33 +12,37 @@ function InicioSesion() {
     const [loading, setLoading] = useState(false);
 
     const navigate = useNavigate();
+    const {login} = useAuth();
 
     const handleSubmit = async (event) => {
         event.preventDefault();
         setError('');
-
         setLoading(true);
 
         try {
-            const response = await fetch(`${api_url}/usuarios`);
-            if (!response.ok){
-                throw new Error("No se pudo conectar con el servidor")
-            }
+            const response = await fetch(`${API_URL}/login`,{
+                method: 'POST',
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    login: identifier,
+                    contrasena: password
+                }),
+            });
 
-            const usuarios = await response.json();
+            if (response.ok){
+                const usuarioData = await response.json();
 
-            const usuarioEncontrado = usuarios.find(user =>
-                (user.email === identifier || user.username === identifier) &&
-                user.password === password
-            );
-
-            if (usuarioEncontrado) {
+                login(usuarioData);
                 navigate("/foro");
-            } else {
-                setError("Usuario o contraseña incorrectos");
+            } else{
+                const errorData = await response.text();
+                setError(errorData || "Usuario o contraseña incorrectos");
             }
-        } catch (err){
-            setError(err.message);
+        } catch (err) {
+            console.error(err);
+            setError("No se pudo conectar con el servidor");
         } finally{
             setLoading(false);
         }

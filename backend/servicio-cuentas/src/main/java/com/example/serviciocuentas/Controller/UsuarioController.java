@@ -21,7 +21,7 @@ public class UsuarioController {
             Usuario nuevoUsuario = usuarioService.registrarUsuario(request);
             return ResponseEntity.ok(nuevoUsuario);
         } catch(Exception e){
-            return ResponseEntity.badRequest().body("Error al registrar usuario: " + e.getMessage());
+            return ResponseEntity.badRequest().body("Error al registrar usuario: El nombre de usuario o correo ya esta en uso");
         }
     }
 

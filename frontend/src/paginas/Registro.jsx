@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
-const API_URL = "http://localhost:8000/api/usuarios";
+const API_URL = "http://localhost:8080/api/usuarios";
 
 function Registro() {
     const [email, setEmail] = useState("");
@@ -15,7 +15,7 @@ function Registro() {
 
     const navigate = useNavigate();
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
         setError("");
 
@@ -36,9 +36,34 @@ function Registro() {
             return;
         }
 
-        alert(`Registro exitoso para el usuario: ${username}`);
+        setLoading(true);
 
-        navigate("/iniciosesion")
+        try{
+            const response = await fetch(`${API_URL}/registro`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    nombreUsuario: username,
+                    correoUsuario: email,
+                    contrasena: password
+                }),
+            });
+
+            if (response.ok) {
+                alert("¡Registro exitoso! Redirigiendo a inicio de sesión...")
+                navigate("/iniciosesion")
+            } else {
+                const textoError = await response.text();
+                setError(textoError || "Error al registra usuario");
+            }
+        } catch (err) {
+            console.error(err);
+            setError("Error de conexión")
+        } finally {
+            setLoading(false);
+        }
     };
 
     const handleShowPassword = () => {
@@ -101,8 +126,8 @@ function Registro() {
                             <img src="/img/ojo-cerrado.png" id="toggleConfirmPassword" className="toggle-password-icon" alt="Mostrar/Ocultar" onClick={handleShowConfirmPassword} />
                         </div>
                     </div>
-                    <button type="submit" className="btn btn-lg btn-outline-light w-100 mt-4 boton-hollow">
-                        Registrarse
+                    <button type="submit" className="btn btn-lg btn-outline-light w-100 mt-4 boton-hollow" disabled={loading}>
+                        {loading ? "Registrando..." : "Registrarse"}
                     </button>
                     <div className="text-center mt-3">
                         <Link to="/iniciosesion" className="link-blue">¿Ya tienes una cuenta? Inicia sesión</Link>

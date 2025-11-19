@@ -1,6 +1,9 @@
 import { Link } from 'react-router-dom';
+import {useAuth} from "../data/AuthContext.jsx";
 
 function Navbar() {
+    const {logout} = useAuth();
+
     return (
         <nav className="navbar navbar-expand-lg navbar-dark bg-custom-dark">
             <div className="container-fluid">
@@ -38,7 +41,7 @@ function Navbar() {
                             <Link className="nav-link" to="trivia"><img src="/img/trivia.png" alt="Trivia" /></Link>
                         </li>
                         <li className="nav-item cerrarSesion">
-                            <Link className="nav-link" to="/"><img src="/img/cerrarsesion.png" alt="Cerrar Sesion"/></Link>
+                            <Link className="nav-link" to="/" onClick={logout}><img src="/img/cerrarsesion.png" alt="Cerrar Sesion"/></Link>
                         </li>
                     </ul>
                 </div>
