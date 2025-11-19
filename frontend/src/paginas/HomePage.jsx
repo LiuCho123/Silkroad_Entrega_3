@@ -19,6 +19,9 @@ function HomePage() {
                     <Link to="/iniciosesion" className="btn btn-outline-light btn-lg boton-hollow">Iniciar Sesión </Link>
                     <Link to="/registro" className="btn btn-outline-light btn-lg boton-hollow">Registrarse</Link>
                 </div>
+
+                <Link to="/foro" className="btn btn-outline-light btn-lg boton-hollow">Acceder como invitado</Link>
+
             </main>
         </div>
     );

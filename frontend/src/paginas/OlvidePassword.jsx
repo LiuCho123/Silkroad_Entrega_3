@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
-const api_url = "http://demo0658844.mockable.io";
+const API_URL = "http://localhost:8080/api/recuperacion";
 
 function OlvidePassword() {
     const [email, setEmail] = useState('');
@@ -16,32 +16,28 @@ function OlvidePassword() {
         setLoading(true);
 
         try {
-            const response = await fetch(`${api_url}/usuarios`);
-            if (!response.ok) {
-                throw new Error("Error al conectar con el servidor")
+            const response = await fetch(`${API_URL}/solicitar`, {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify(email)
+            });
+
+            if (response.ok){
+                const codigoRecibido = await response.text();
+
+                localStorage.setItem("recuperacion", JSON.stringify({ email: email, codigo: codigoRecibido }));
+
+                alert(`SIMULACIÓN: Se ha enviado un correo a ${email} con el código: ${codigoRecibido}`);
+                navigate("/verificarcodigo");
+            } else{
+                const errorTexto = await response.text();
+                setError(errorTexto)
             }
-            const usuarios = await response.json();
-
-            const usuarioExistente = usuarios.find(user => user.email === email);
-
-            if (!usuarioExistente) {
-                setError("El correo electrónico no se encuentra registrado")
-                return;
-            }
-
-            const codigo = Math.floor(100000 + Math.random() * 900000).toString();
-            localStorage.setItem("recuperacion", JSON.stringify({ email: email, codigo: codigo }));
-
-            alert(`SIMULACIÓN: Se ha enviado un correo a ${email} con el código: ${codigo}`);
-            navigate("/verificarcodigo");
         } catch (err){
-            setError(err.message)
+            setError("Error de conexión con el servidor")
         } finally{
             setLoading(false);
         }
-
-
-
     };
 
     return (
