@@ -6,6 +6,7 @@ import com.example.servicioforo.Model.Hilo;
 import com.example.servicioforo.Model.Respuesta;
 import com.example.servicioforo.Repository.HiloRepository;
 import com.example.servicioforo.Repository.RespuestaRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -52,5 +53,13 @@ public class ForoService {
                 .build();
 
         return respuestaRepository.save(nuevaRespuesta);
+    }
+
+    @Transactional
+    public void eliminarHilo(Integer idHilo){
+        List<Respuesta> respuestas = respuestaRepository.findByHilo_idHilo(idHilo);
+
+        respuestaRepository.deleteAll(respuestas);
+        hiloRepository.deleteById(idHilo);
     }
 }

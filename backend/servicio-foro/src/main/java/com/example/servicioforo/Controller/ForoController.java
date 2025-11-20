@@ -59,4 +59,14 @@ public class ForoController {
             return ResponseEntity.badRequest().body("Error al crear el respuesta");
         }
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> eliminarHilo(@PathVariable Integer id){
+        try{
+            foroService.eliminarHilo(id);
+            return ResponseEntity.ok("Hilo eliminado correctamente");
+        } catch(Exception e){
+            return  ResponseEntity.badRequest().body("Error al eliminar el hilo");
+        }
+    }
 }

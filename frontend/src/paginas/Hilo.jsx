@@ -4,7 +4,7 @@ import {useAuth} from "../data/AuthContext.jsx";
 
 const API_URL = "http://localhost:8081/api/hilos";
 
-function Hilo() {
+function Hilo({onHiloDeleted}) {
     const { hiloId } = useParams();
     const navigate = useNavigate();
 
@@ -76,10 +76,26 @@ function Hilo() {
         }
     };
 
-    const handleDelete = () => { 
-        if (window.confirm('¿Estás seguro que deseas eliminar este hilo?')) {
-            alert("Hilo eliminado con exito (SIMULADO)");
-            navigate("/foro");
+    const handleDelete = async()  => {
+        if (!window.confirm('¿Estás seguro que deseas eliminar este hilo?')) {
+            return;
+        }
+
+        try{
+            const response = await fetch(`${API_URL}/${hiloId}`, {
+                method: "DELETE",
+            });
+
+            if (response.ok){
+                alert("Hilo eliminado con éxito");
+                if (onHiloDeleted) await onHiloDeleted();
+                navigate("/foro")
+            } else{
+                alert("Error al eliminar")
+            }
+        } catch(error) {
+            console.error(error);
+            alert("Error de conexión al intentar eliminar");
         }
     };
 
@@ -98,7 +114,9 @@ function Hilo() {
                 <div className="foro-container">
                     <div className="d-flex justify-content-between align-items-center">
                         <h1 className="mb-0">{hilo.tituloHilo}</h1>
-                        <button onClick={handleDelete} className="btn btn-outline-danger">Eliminar Hilo</button>
+                        {usuario && usuario.nombreUsuario === hilo.autorHilo && (
+                            <button onClick={handleDelete} className="btn btn-outline-danger">Eliminar Hilo</button>
+                        )}
                     </div>
                     <hr className="my-4" />
 
