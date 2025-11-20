@@ -1,35 +1,58 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import {useAuth} from "../data/AuthContext.jsx";
+
+const API_URL = "http://localhost:8081/api/hilos";
 
 function CrearHilo({onCrearHilo}) {
     const [titulo, setTitulo] = useState("");
     const [contenido, setContenido] = useState("");
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
 
     const navigate = useNavigate();
+    const {usuario} = useAuth();
 
-    const handleSubmit = (event) => {
+    useEffect(() => {
+        if (!usuario) {
+            alert("Debes iniciar sesión para publicar un hilo")
+            navigate("/iniciosesion")
+        }
+    }, [usuario, navigate]);
+
+    const handleSubmit = async (event) => {
         event.preventDefault();
+        setError("");
+        setLoading(true);
 
-            const nuevoHilo = {
-                id: Date.now(),
+        if (!usuario) return;
+
+            const nuevoHiloDTO = {
                 titulo: titulo,
-                autor: "LiuCho", 
-                respuestas: 0,
-                ultimoMensaje: {
-                    autor: "LiuCho",
-                    fecha: new Date().toISOString()
-                },
-                mensajes: [{
-                    id: Date.now(),
-                    autor: "LiuCho",
-                    contenido: contenido,
-                    fecha: new Date().toISOString()
-                }]
+                mensaje: contenido,
+                idUsuario: usuario.idUsuario,
+                nombreAutor: usuario.nombreUsuario
             };
 
-          onCrearHilo(nuevoHilo);
+            try{
+                const response = await fetch(API_URL,{
+                    method: "POST",
+                    headers: {"Content-Type": "application/json"},
+                    body: JSON.stringify(nuevoHiloDTO)
+                });
 
-          navigate("/foro")
+                if (response.ok) {
+                    if (onCrearHilo) await onCrearHilo();
+                    navigate("/foro")
+                } else{
+                    const textoError = await response.text();
+                    setError("Error al crear hilo");
+                }
+            } catch (err) {
+                setError("Error de conexión con el servidor");
+            } finally{
+                setLoading(false);
+            }
 
     }
     return (

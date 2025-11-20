@@ -1,59 +1,79 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
+import {useAuth} from "../data/AuthContext.jsx";
 
-const API_URL = "http://demo0658844.mockable.io";
+const API_URL = "http://localhost:8081/api/hilos";
 
 function Hilo() {
     const { hiloId } = useParams();
     const navigate = useNavigate();
+
     const [hilo, setHilo] = useState(null);
+    const [respuestas, setRespuestas] = useState([]);
     const [contenidoRespuesta, setContenidoRespuesta] = useState("");
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    useEffect(() => {
-        const fetchHilo = async () => {
-            setLoading(true);
-            setError(null);
-            try {
-                const response = await fetch(`${API_URL}/hilos`);
-                if (!response.ok) throw new Error('No se pudo cargar la información del hilo.');
-                
-                const hilos = await response.json();
-                const hiloActual = hilos.find(h => h.id === Number(hiloId));
+    const {usuario} = useAuth();
 
-                if (hiloActual) {
-                    if (!hiloActual.mensajes) hiloActual.mensajes = [];
-                    setHilo(hiloActual);
-                } else {
-                    throw new Error('Hilo no encontrado.');
-                }
-            } catch (err) {
-                setError(err.message);
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchHilo();
+    const cargarDatos = async () => {
+        try{
+            const resHilo = await fetch(`${API_URL}/${hiloId}`);
+            if (!resHilo.ok)
+                throw new Error("No se pudo cargar el hilo");
+            const dataHilo = await resHilo.json();
+            setHilo(dataHilo);
+
+            const resResp = await fetch(`${API_URL}/${hiloId}/respuestas`);
+            if (!resResp.ok)
+                throw new Error("No se pudieron cargar las respuestas");
+            const dataResp = await resResp.json();
+            setRespuestas(dataResp);
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        cargarDatos();
     }, [hiloId]);
 
-    const handleReplySubmit = (event) => {
+    const handleReplySubmit = async (event) => {
         event.preventDefault();
         if (contenidoRespuesta.trim() === "") return;
 
-        const nuevaRespuesta = {
-            id: Date.now(),
-            autor: "UsuarioResponde",
-            contenido: contenidoRespuesta,
-            fecha: new Date().toISOString()
+        if (!usuario) {
+            alert("Debes iniciar sesión para responder")
+            navigate("/iniciosesion");
+            return;
+        }
+
+        const nuevaRespuestaDTO = {
+            mensaje: contenidoRespuesta,
+            idHilo: hiloId,
+            idUsuario: usuario.idUsuario,
+            nombreAutor: usuario.nombreUsuario
         };
 
-        const hiloActualizado = {
-            ...hilo,
-            mensajes: [...hilo.mensajes, nuevaRespuesta]
-        };
-        setHilo(hiloActualizado);
-        setContenidoRespuesta('');
+        try{
+            const response = await fetch(`${API_URL}/${hiloId}/respuestas`, {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify(nuevaRespuestaDTO)
+            });
+
+            if (response.ok){
+                setContenidoRespuesta("");
+                cargarDatos();
+            } else{
+                alert("Error al enviar respuesta");
+            }
+        } catch (err){
+            console.error(err);
+            alert("Error de conexión")
+        }
     };
 
     const handleDelete = () => { 
@@ -66,12 +86,6 @@ function Hilo() {
     if (loading) return <div className='container my-5 text-white text-center'>Cargando hilo...</div>;
     if (error) return <div className='container my-5 text-danger text-center'>Error: {error}</div>;
     if (!hilo) return <div className='container my-5 text-white'>Hilo no encontrado.</div>;
-    
-    const mensajeOriginal = hilo.mensajes?.length > 0
-        ? hilo.mensajes[0]
-        : { autor: hilo.autor, contenido: "Este hilo aún no tiene un mensaje inicial.", fecha: new Date().toISOString() };
-        
-    const respuestas = hilo.mensajes?.length > 1 ? hilo.mensajes.slice(1) : [];
 
     return (
         <div className="body-main">
@@ -83,22 +97,22 @@ function Hilo() {
             <main className="container my-5">
                 <div className="foro-container">
                     <div className="d-flex justify-content-between align-items-center">
-                        <h1 className="mb-0">{hilo.titulo}</h1>
+                        <h1 className="mb-0">{hilo.tituloHilo}</h1>
                         <button onClick={handleDelete} className="btn btn-outline-danger">Eliminar Hilo</button>
                     </div>
                     <hr className="my-4" />
 
                     <div className="post-original">
-                        <div className="post-autor">{mensajeOriginal.autor}</div>
-                        <div className="post-contenido">{mensajeOriginal.contenido}</div>
-                        <div className="post-fecha">{new Date(mensajeOriginal.fecha).toLocaleString('es-ES')}</div>
+                        <div className="post-autor">{hilo.autorHilo}</div>
+                        <div className="post-contenido">{hilo.mensajeInicialHilo}</div>
+                        <div className="post-fecha">{new Date(hilo.fechaHilo).toLocaleString('es-ES')}</div>
                     </div>
 
                     {respuestas.map(respuesta => (
-                        <div key={respuesta.id} className="post">
-                            <div className="post-autor">{respuesta.autor}</div>
-                            <div className="post-contenido">{respuesta.contenido}</div>
-                            <div className="post-fecha">{new Date(respuesta.fecha).toLocaleString('es-ES')}</div>
+                        <div key={respuesta.idRespuesta} className="post">
+                            <div className="post-autor">{respuesta.autorRespuesta}</div>
+                            <div className="post-contenido">{respuesta.mensajeRespuesta}</div>
+                            <div className="post-fecha">{new Date(respuesta.fechaRespuesta).toLocaleString('es-ES')}</div>
                         </div>
                     ))}
 

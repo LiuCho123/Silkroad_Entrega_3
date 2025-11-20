@@ -2,17 +2,19 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 
 function Foro({hilos, loading, error}) {
+
     const formatearFecha = (fechaISO) => {
+        if (!fechaISO) return "Fecha desconocida";
         const fecha = new Date(fechaISO);
         return fecha.toLocaleDateString('es-ES', {
-            day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit'
+            day: 'numeric', month: 'long', year: 'numeric'
         });
     };
 
     return (
         <main className="container my-5">
             {loading && <p className="text-white text-center">Cargando hilos...</p>}
-            {error && <p className="text-danger text-center">Error: {error}</p>}
+            {error && <p className="text-danger text-center">{error}</p>}
 
             {!loading && !error && (
                 <div className="foro-container">
@@ -25,27 +27,32 @@ function Foro({hilos, loading, error}) {
 
                     <table className="tabla-hilos">
                         <thead>
-                            <tr>
-                                <th>Tema</th>
-                                <th>Autor</th>
-                                <th>Respuestas</th>
-                                <th>Últimos posts</th>
-                            </tr>
+                        <tr>
+                            <th>Tema</th>
+                            <th>Autor</th>
+                            <th>Fecha</th>
+                        </tr>
                         </thead>
                         <tbody>
-                            {hilos.map(hilo => (
-                                <tr key={hilo.id}>
-                                    <td>
-                                        <Link to={`/hilo/${hilo.id}`}>{hilo.titulo}</Link>
-                                    </td>
-                                    <td>{hilo.autor}</td>
-                                    <td>{hilo.respuestas}</td>
-                                    <td>
-                                        por {hilo.ultimoMensaje.autor} <br />
-                                        <small>{formatearFecha(hilo.ultimoMensaje.fecha)}</small>
-                                    </td>
-                                </tr>
-                            ))}
+                        {hilos.map(hilo => (
+                            <tr key={hilo.idHilo}>
+                                <td>
+                                    <Link to={`/hilo/${hilo.idHilo}`}>{hilo.tituloHilo}</Link>
+                                </td>
+                                {/* Usamos 'autorHilo' */}
+                                <td>{hilo.autorHilo}</td>
+                                <td>
+                                    {formatearFecha(hilo.fechaHilo)}
+                                </td>
+                            </tr>
+                        ))}
+                        {hilos.length === 0 && (
+                            <tr>
+                                <td colSpan="3" className="text-center text-white">
+                                    No hay hilos creados aún. ¡Sé el primero!
+                                </td>
+                            </tr>
+                        )}
                         </tbody>
                     </table>
                 </div>
