@@ -6,6 +6,7 @@
       <list>
         <option value="$PROJECT_DIR$/backend/servicio-cuentas/pom.xml" />
         <option value="$PROJECT_DIR$/backend/servicio-juego/pom.xml" />
+        <option value="$PROJECT_DIR$/backend/servicio-foro/pom.xml" />
       </list>
     </option>
   </component>

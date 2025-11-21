@@ -16,35 +16,33 @@ import GuiaPage from './paginas/Guia';
 import RankingPage from './paginas/Ranking.jsx';
 import { ChecklistProvider } from './data/ChecklistContext';
 import {AuthProvider} from "./data/AuthContext.jsx";
-const api_url = "http://demo0658844.mockable.io";
+
+const API_URL = "http://localhost:8081/api";
 
 function App() {
   const [hilos, setHilos] = useState([]);
   const[loading, setLoading] = useState(true);
   const[error, setError] = useState(null);
 
+  const recargarHilos = async () => {
+      setLoading(true);
+      try{
+          const response = await fetch(`${API_URL}/hilos`);
+          if (!response.ok){
+              throw new Error("No se pudieron cargar los hilos");
+          }
+          const data = await response.json();
+          setHilos(data);
+          } catch(err){
+              setError("Error al cargar el foro");
+          } finally{
+              setLoading(false);
+          }
+      };
+
   useEffect(() => {
-    const fetchHilos = async () => {
-      try {
-        const response = await fetch(`${api_url}/hilos`);
-        if (!response.ok) {
-          throw new Error("No se pudieron cargar los hilos");
-        }
-        const data = await response.json();
-        setHilos(data);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchHilos();
+      recargarHilos();
   }, []);
-
-  const handleCrearHilo = (nuevoHilo) => {
-    setHilos([...hilos, nuevoHilo]);
-  }
 
   return (
     <BrowserRouter>
@@ -57,8 +55,8 @@ function App() {
           <Route path="/olvidepassword" element={<OlvidePassword />} />
           <Route path="/verificarcodigo" element={<VerificarCodigo />} />
           <Route path="/recuperarpassword" element={<RecuperarContraseña />} />
-          <Route path="/crear-hilo" element={<CrearHilo onCrearHilo={handleCrearHilo}/>} />
-          <Route path="/hilo/:hiloId" element={<Hilo hilos={hilos}/>} />
+          <Route path="/crear-hilo" element={<CrearHilo onCrearHilo={recargarHilos}/>} />
+          <Route path="/hilo/:hiloId" element={<Hilo onHiloDeleted={recargarHilos}/>} />
 
 
 

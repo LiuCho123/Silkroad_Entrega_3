@@ -8,6 +8,7 @@
         <outputRelativeToContentRoot value="true" />
         <module name="servicio-cuentas" />
         <module name="servicio-juego" />
+        <module name="servicio-foro" />
       </profile>
     </annotationProcessing>
   </component>
@@ -15,6 +16,7 @@
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="servicio-cuentas" options="-parameters" />
       <module name="servicio-juego" options="-parameters" />
+      <module name="servicio-foro" options="-parameters" />
     </option>
   </component>
 </project>
