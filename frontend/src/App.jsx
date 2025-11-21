@@ -56,7 +56,7 @@ function App() {
           <Route path="/verificarcodigo" element={<VerificarCodigo />} />
           <Route path="/recuperarpassword" element={<RecuperarContraseña />} />
           <Route path="/crear-hilo" element={<CrearHilo onCrearHilo={recargarHilos}/>} />
-          <Route path="/hilo/:hiloId" element={<Hilo onHiloDeleted={recargarHilos}/>} />
+          <Route path="/hilo/:hiloId" element={<Hilo onUpdate={recargarHilos}/>} />
 
 
 
