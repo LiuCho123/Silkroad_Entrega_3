@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {useAuth} from "../data/AuthContext.jsx";
 
-const API_URL = "http://localhost:8081/api/hilos";
+const API_URL = "http://44.205.150.156:8081/api/hilos";
 
 function CrearHilo({onCrearHilo}) {
     const [titulo, setTitulo] = useState("");

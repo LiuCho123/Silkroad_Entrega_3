@@ -17,7 +17,7 @@ import RankingPage from './paginas/Ranking.jsx';
 import { ChecklistProvider } from './data/ChecklistContext';
 import {AuthProvider} from "./data/AuthContext.jsx";
 
-const API_URL = "http://localhost:8081/api";
+const API_URL = "http://44.205.150.156:8081/api/hilos";
 
 function App() {
   const [hilos, setHilos] = useState([]);
@@ -27,7 +27,7 @@ function App() {
   const recargarHilos = async () => {
       setLoading(true);
       try{
-          const response = await fetch(`${API_URL}/hilos`);
+          const response = await fetch(`${API_URL}`);
           if (!response.ok){
               throw new Error("No se pudieron cargar los hilos");
           }

@@ -7,14 +7,17 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: silkroad_db
+      MYSQL_ROOT_HOST: '%'
     ports:
       - "3307:3306"
     volumes:
       - mysql_data:/var/lib/mysql
 
   servicio-cuentas:
+      build: ./servicio-cuentas
       image: servicio-cuentas:v1
       container_name: contenedor-cuentas
+      restart: always
       ports:
         - "8080:8080"
       environment:
@@ -25,8 +28,10 @@ services:
         - mysqldb
 
   servicio-foro:
+      build: ./servicio-foro
       image: servicio-foro:v1
       container_name: contenedor-foro
+      restart: always
       ports:
         - "8081:8081"
       environment:
