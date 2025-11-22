@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ActualizarProgresoDTO {
-    private Integer usuarioId;
+    private Integer idUsuario;
     private String itemId;
     private boolean marcado;
 }

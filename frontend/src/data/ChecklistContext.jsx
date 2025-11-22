@@ -1,5 +1,6 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
-const API_ENDPOINT = 'https://demo0658844.mockable.io/checklist'; 
+import {useAuth} from "./AuthContext.jsx";
+const API_BASE_URL = 'http://localhost:8082/api/checklist';
 const percentageValues = {
     'boss': 1,
     'equip': 2,
@@ -163,73 +164,74 @@ const checklistData = [
         ];
 
 const ChecklistContext = createContext();
+
 export function useChecklist() {
-  return useContext(ChecklistContext);
+    return useContext(ChecklistContext);
 }
 
 export function ChecklistProvider({ children }) {
-  const [checkedItems, setCheckedItems] = useState(new Set());
-  const [isLoading, setIsLoading] = useState(true); 
+    const [checkedItems, setCheckedItems] = useState(new Set());
+    const [isLoading, setIsLoading] = useState(true);
+
+    const { currentUser } = useAuth();
+
+    useEffect(() => {
+        const fetchProgress = async () => {
+            if (!currentUser || !currentUser.idUsuario) {
+                setIsLoading(false);
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/progreso/${currentUser.idUsuario}`);
+                if (response.ok) {
+                    const data = await response.json();
+                    setCheckedItems(new Set(data));
+                }
+            } catch (error) {
+                console.error("Error al cargar progreso:", error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchProgress();
+    }, [currentUser]);
 
 
-  useEffect(() => {
-    const fetchProgress = async () => {
-      try {
-        const response = await fetch(API_ENDPOINT);
-        if (!response.ok) throw new Error('No se pudo cargar el progreso.');
-        const data = await response.json();
-        setCheckedItems(new Set(data.checkedIds || []));
-      } catch (error) {
-        console.error("Error al cargar:", error);
-      } finally {
-        setIsLoading(false);
-      }
+    const handleCheckboxChange = async (itemId) => {
+        const isChecking = !checkedItems.has(itemId);
+        const newCheckedItems = new Set(checkedItems);
+
+        if (isChecking) {
+            newCheckedItems.add(itemId);
+        } else {
+            newCheckedItems.delete(itemId);
+        }
+        setCheckedItems(newCheckedItems);
+
+        if (currentUser && currentUser.idUsuario) {
+            try {
+                await fetch(`${API_BASE_URL}/progreso`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        idUsuario: currentUser.idUsuario,
+                        itemId: itemId,
+                        marcado: isChecking
+                    }),
+                });
+            } catch (error) {
+                console.error("Error guardando en BD", error);
+
+            }
+        }
     };
-    fetchProgress();
-  }, []); 
-  const handleCheckboxChange = (id) => {
-    const newCheckedItems = new Set(checkedItems);
-    if (newCheckedItems.has(id)) {
-      newCheckedItems.delete(id);
-    } else {
-      newCheckedItems.add(id);
-    }
-    setCheckedItems(newCheckedItems);
-  };
-  
-  const handleReset = async () => {
-    if (window.confirm('¿Estás seguro de que quieres borrar todo tu progreso?')) {
-      setCheckedItems(new Set());
-    }
-  };
-
-  let currentPercentage = 0;
-  const allItemsForCalc = checklistData.flatMap(cat => cat.items.map(item => ({...item, category: cat.category })));
-  
-  checkedItems.forEach(id => {
-    const item = allItemsForCalc.find(i => i.id === id);
-    if (item && percentageValues[item.category]) {
-      currentPercentage += percentageValues[item.category];
-    }
-  });
-
-  const totalItems = allItemsForCalc.length;
-  const itemsRemaining = totalItems - checkedItems.size;
 
 
-  const value = {
-    checkedItems,
-    handleCheckboxChange,
-    handleReset,
-    currentPercentage,
-    itemsRemaining,
-    checklistData,
-    isLoading, 
-  };
-
-  return (
-    <ChecklistContext.Provider value={value}>
-      {children}
-    </ChecklistContext.Provider>
-  );
+    return (
+        <ChecklistContext.Provider value={{ checkedItems, handleCheckboxChange, isLoading,}}>
+            {children}
+        </ChecklistContext.Provider>
+    );
 }

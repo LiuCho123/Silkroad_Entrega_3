@@ -14,24 +14,24 @@ public class ProgresoService {
 
     private final ProgresoUsuarioRepository progresoRepository;
 
-    public List<String> obtenerItemsCompletados(Integer usuarioId) {
-        return progresoRepository.findAllByUsuarioId(usuarioId)
+    public List<String> obtenerItemsCompletados(Integer idUsuario) {
+        return progresoRepository.findAllByIdUsuario(idUsuario)
                 .stream()
                 .map(ProgresoUsuario::getItemId)
                 .collect(Collectors.toList());
     }
 
-    public void gestionarProgreso(Integer usuarioId, String itemId, boolean marcado) {
+    public void gestionarProgreso(Integer idUsuario, String itemId, boolean marcado) {
         if (marcado) {
-            if (!progresoRepository.existsByUsuarioIdAndItemId(usuarioId, itemId)) {
+            if (!progresoRepository.existsByIdUsuarioAndItemId(idUsuario, itemId)) {
                 ProgresoUsuario nuevoProgreso = ProgresoUsuario.builder()
-                        .usuarioId(usuarioId)
+                        .idUsuario(idUsuario) 
                         .itemId(itemId)
                         .build();
                 progresoRepository.save(nuevoProgreso);
             }
         } else {
-            progresoRepository.deleteByUsuarioIdAndItemId(usuarioId, itemId);
+            progresoRepository.deleteByIdUsuarioAndItemId(idUsuario, itemId);
         }
     }
 }

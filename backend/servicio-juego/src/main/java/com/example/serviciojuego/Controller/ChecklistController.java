@@ -19,29 +19,17 @@ public class ChecklistController {
 
     private final ChecklistService checklistService;
     private final ProgresoService progresoService;
-    @GetMapping
-    public ResponseEntity<List<ChecklistItem>> obtenerChecklist() {
-        return ResponseEntity.ok(checklistService.obtenerTodosLosItems());
+
+    @GetMapping("/progreso/{idUsuario}")
+    public ResponseEntity<List<String>> obtenerProgresoUsuario(@PathVariable Integer idUsuario) {
+        return ResponseEntity.ok(progresoService.obtenerItemsCompletados(idUsuario));
     }
 
-    @PostMapping
-    public ResponseEntity<?> crearItem(@RequestBody ChecklistItemDTO request) {
-        try {
-            ChecklistItem nuevoItem = checklistService.crearItem(request);
-            return ResponseEntity.ok(nuevoItem);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error al crear ítem: " + e.getMessage());
-        }
-    }
-    @GetMapping("/progreso/{usuarioId}")
-    public ResponseEntity<List<String>> obtenerProgresoUsuario(@PathVariable Integer usuarioId) {
-        return ResponseEntity.ok(progresoService.obtenerItemsCompletados(usuarioId));
-    }
     @PostMapping("/progreso")
     public ResponseEntity<?> actualizarProgreso(@RequestBody ActualizarProgresoDTO request) {
         try {
             progresoService.gestionarProgreso(
-                    request.getUsuarioId(),
+                    request.getIdUsuario(),
                     request.getItemId(),
                     request.isMarcado()
             );
