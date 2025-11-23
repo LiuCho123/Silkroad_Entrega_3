@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-const API_URL = "http://localhost:8082/api/trivia";
+const API_URL = "http://44.205.150.156:8082/api/trivia";
 
 function Trivia() {
     const [preguntas, setPreguntas] = useState([]);

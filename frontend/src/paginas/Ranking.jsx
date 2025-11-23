@@ -3,12 +3,12 @@ import { useAuth } from '../data/AuthContext';
 import { useChecklist } from '../data/ChecklistContext';
 import '/src/style.css';
 
-const API_CUENTAS = "http://localhost:8080/api/usuarios";
-const API_JUEGO   = "http://localhost:8082/api/checklist/ranking";
+const API_CUENTAS = "http://44.205.150.156:8080/api/usuarios";
+const API_JUEGO   = "http://44.205.150.156:8082/api/checklist/ranking";
 
 function RankingPage() {
     const { usuario } = useAuth();
-    const { checklistData } = useChecklist();
+    const { checklistData, currentPercentage } = useChecklist();
 
     const [rankingReal, setRankingReal] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -38,16 +38,25 @@ function RankingPage() {
                     const tablaRanking = puntajes.map(puntaje => {
                         const usuarioEncontrado = usuarios.find(u => u.idUsuario === puntaje.idUsuario);
 
+                        let scoreFinal = (puntaje.cantidadItems / totalItemsPosibles * 112);
+
+                        const yo = usuario && usuario.idUsuario === puntaje.idUsuario;
+
                         const porcentaje = (puntaje.cantidadItems / totalItemsPosibles) * 112;
+
+                        if (yo){
+                            scoreFinal = currentPercentage || 0
+                        }
 
                         return {
                             id: puntaje.idUsuario,
                             name: usuarioEncontrado ? usuarioEncontrado.nombreUsuario : "Usuario Desconocido",
-                            score: Math.min(porcentaje, 112),
-                            isCurrentUser: usuario && usuario.idUsuario === puntaje.idUsuario
+                            score: Math.min(scoreFinal, 112),
+                            isCurrentUser: yo
                         };
                     });
 
+                    tablaRanking.sort((a, b) => b.score - a.score);
                     setRankingReal(tablaRanking);
                 }
             } catch (error) {
@@ -58,7 +67,7 @@ function RankingPage() {
         };
 
         fetchDatos();
-    }, [usuario, checklistData]);
+    }, [usuario, checklistData, currentPercentage]);
 
 
     if (loading) {
