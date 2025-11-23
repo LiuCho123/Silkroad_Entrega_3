@@ -1,6 +1,6 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import {useAuth} from "./AuthContext.jsx";
-const API_BASE_URL = 'http://localhost:8082/api/checklist';
+const API_BASE_URL = 'http://44.205.150.156:8082/api/checklist';
 const percentageValues = {
     'boss': 1,
     'equip': 2,

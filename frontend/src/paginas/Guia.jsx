@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import '/src/style.css';
 
-const API_URL = "http://localhost:8082/api/guia";
+const API_URL = "http://44.205.150.156:8082/api/guia";
 
 function GuiaPage() {
     const [guiaSections, setGuiaSections] = useState([]);
