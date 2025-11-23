@@ -30,25 +30,22 @@ function Foro({hilos, loading, error}) {
                         <tr>
                             <th>Tema</th>
                             <th>Autor</th>
+                            <th>Respuestas</th>
                             <th>Fecha</th>
                         </tr>
                         </thead>
                         <tbody>
                         {hilos.map(hilo => (
                             <tr key={hilo.idHilo}>
-                                <td>
-                                    <Link to={`/hilo/${hilo.idHilo}`}>{hilo.tituloHilo}</Link>
-                                </td>
-                                {/* Usamos 'autorHilo' */}
+                                <td><Link to={`/hilo/${hilo.idHilo}`}>{hilo.tituloHilo}</Link></td>
                                 <td>{hilo.autorHilo}</td>
-                                <td>
-                                    {formatearFecha(hilo.fechaHilo)}
-                                </td>
+                                <td className ="text-center">{hilo.cantidadRespuestas || 0}</td>
+                                <td>{formatearFecha(hilo.fechaHilo)}</td>
                             </tr>
                         ))}
                         {hilos.length === 0 && (
                             <tr>
-                                <td colSpan="3" className="text-center text-white">
+                                <td colSpan="4" className="text-center text-white">
                                     No hay hilos creados aún. ¡Sé el primero!
                                 </td>
                             </tr>

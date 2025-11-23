@@ -17,6 +17,29 @@ public class UsuarioService {
     private final UsuarioRepository usuarioRepository;
 
     public Usuario registrarUsuario(RegistroDTO datos){
+
+        if(usuarioRepository.existsByNombreUsuario(datos.getNombreUsuario())){
+            throw new RuntimeException("El nombre de usuario ya está en uso");
+        }
+
+        if (usuarioRepository.existsByCorreoUsuario(datos.getCorreoUsuario())){
+            throw new RuntimeException("El correo ya está registrado");
+        }
+
+        String password = datos.getContrasena();
+
+        if (password == null || password.length() < 8){
+            throw new RuntimeException("La contraseña debe tener al menos 8 caracteres");
+        }
+
+        if (!password.matches(".*[A-Z].*")){
+            throw new RuntimeException("La contraseña debe tener al menos una mayúscula");
+        }
+
+        if (!password.matches(".*[a-z].*")){
+            throw new RuntimeException("La contraseña debe tener al menos una minúscula");
+        }
+
         Usuario nuevoUsuario = Usuario.builder()
                 .nombreUsuario(datos.getNombreUsuario())
                 .correoUsuario(datos.getCorreoUsuario())

@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Formula;
 
 import java.util.Date;
 
@@ -32,8 +33,11 @@ public class Hilo {
     @Column(name = "usuario_id_usuario")
     private Integer idUsuario;
 
-    @Temporal(TemporalType.DATE)
+    @Temporal(TemporalType.TIMESTAMP)
     private Date fechaHilo;
+
+    @Formula("(SELECT COUNT(r.id_respuesta) FROM respuesta r WHERE r.id_hilo = id_hilo)")
+    private Integer cantidadRespuestas;
 
     @PrePersist
     public void onCreate(){

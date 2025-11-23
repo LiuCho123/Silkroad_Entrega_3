@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import {useAuth} from "../data/AuthContext.jsx";
 
-const API_URL = "http://localhost:8081/api/hilos";
+const API_URL = "http://44.205.150.156:8081/api/hilos";
 
-function Hilo({onHiloDeleted}) {
+function Hilo({onUpdate}) {
     const { hiloId } = useParams();
     const navigate = useNavigate();
 
@@ -67,6 +67,8 @@ function Hilo({onHiloDeleted}) {
             if (response.ok){
                 setContenidoRespuesta("");
                 cargarDatos();
+
+                if (onUpdate) await onUpdate();
             } else{
                 alert("Error al enviar respuesta");
             }
@@ -88,7 +90,7 @@ function Hilo({onHiloDeleted}) {
 
             if (response.ok){
                 alert("Hilo eliminado con éxito");
-                if (onHiloDeleted) await onHiloDeleted();
+                if (onUpdate) await onUpdate();
                 navigate("/foro")
             } else{
                 alert("Error al eliminar")

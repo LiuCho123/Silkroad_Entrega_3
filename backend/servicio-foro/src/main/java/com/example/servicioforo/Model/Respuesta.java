@@ -29,7 +29,7 @@ public class Respuesta {
     @Column(name = "usuario_id_usuario")
     private Integer idUsuario;
 
-    @Temporal(TemporalType.DATE)
+    @Temporal(TemporalType.TIMESTAMP)
     private Date fechaRespuesta;
 
     @ManyToOne(fetch = FetchType.LAZY)

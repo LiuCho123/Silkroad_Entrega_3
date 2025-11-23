@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
-const API_URL = "http://localhost:8080/api/usuarios";
+const API_URL = "http://44.205.150.156:8080/api/usuarios";
 
 function Registro() {
     const [email, setEmail] = useState("");
