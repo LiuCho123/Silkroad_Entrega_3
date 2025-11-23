@@ -1,7 +1,9 @@
 package com.example.serviciojuego.Repository;
 
+import com.example.serviciojuego.DTO.PuntajeDTO;
 import com.example.serviciojuego.Model.ProgresoUsuario;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,4 +18,8 @@ public interface ProgresoUsuarioRepository extends JpaRepository<ProgresoUsuario
 
     @Transactional
     void deleteByIdUsuarioAndItemId(Integer idUsuario, String itemId);
+
+    @Query("SELECT new com.example.serviciojuego.DTO.PuntajeDTO(p.idUsuario, COUNT(p)) " +
+            "FROM ProgresoUsuario p GROUP BY p.idUsuario ORDER BY COUNT(p) DESC")
+    List<PuntajeDTO> obtenerRankingGlobal();
 }

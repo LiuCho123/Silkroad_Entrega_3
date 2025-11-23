@@ -172,21 +172,47 @@ export function useChecklist() {
 export function ChecklistProvider({ children }) {
     const [checkedItems, setCheckedItems] = useState(new Set());
     const [isLoading, setIsLoading] = useState(true);
+    const [currentPercentage, setCurrentPercentage] = useState(0); // Agregado
+    const [itemsRemaining, setItemsRemaining] = useState(0);       // Agregado
 
-    const { currentUser } = useAuth();
+    const { usuario } = useAuth();
+
+    const calculateProgress = (checkedSet) => {
+        let totalPercent = 0;
+        let checkedCount = 0;
+        let totalItems = 0;
+
+        checklistData.forEach(category => {
+            const valuePerItem = percentageValues[category.category];
+            category.items.forEach(item => {
+                totalItems++;
+                if (checkedSet.has(item.id)) {
+                    totalPercent += valuePerItem;
+                    checkedCount++;
+                }
+            });
+        });
+
+        setCurrentPercentage(Math.min(totalPercent, 112));
+        setItemsRemaining(totalItems - checkedCount);
+    };
 
     useEffect(() => {
         const fetchProgress = async () => {
-            if (!currentUser || !currentUser.idUsuario) {
+            // 2. CORRECCIÓN: Verificamos 'usuario'
+            if (!usuario || !usuario.idUsuario) {
                 setIsLoading(false);
                 return;
             }
 
             try {
-                const response = await fetch(`${API_BASE_URL}/progreso/${currentUser.idUsuario}`);
+                const response = await fetch(`${API_BASE_URL}/progreso/${usuario.idUsuario}`);
                 if (response.ok) {
                     const data = await response.json();
-                    setCheckedItems(new Set(data));
+                    // Convertimos la lista de IDs a un Set
+                    const newSet = new Set(data);
+                    setCheckedItems(newSet);
+                    calculateProgress(newSet); // Calculamos al cargar
                 }
             } catch (error) {
                 console.error("Error al cargar progreso:", error);
@@ -196,7 +222,7 @@ export function ChecklistProvider({ children }) {
         };
 
         fetchProgress();
-    }, [currentUser]);
+    }, [usuario]); // Dependencia corregida a 'usuario'
 
 
     const handleCheckboxChange = async (itemId) => {
@@ -208,29 +234,54 @@ export function ChecklistProvider({ children }) {
         } else {
             newCheckedItems.delete(itemId);
         }
-        setCheckedItems(newCheckedItems);
 
-        if (currentUser && currentUser.idUsuario) {
+        setCheckedItems(newCheckedItems);
+        calculateProgress(newCheckedItems);
+
+        if (usuario && usuario.idUsuario) {
             try {
                 await fetch(`${API_BASE_URL}/progreso`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        idUsuario: currentUser.idUsuario,
+                        idUsuario: usuario.idUsuario,
                         itemId: itemId,
-                        marcado: isChecking
+                        marcado: isChecking // Enviamos booleano (true/false)
                     }),
                 });
             } catch (error) {
                 console.error("Error guardando en BD", error);
-
             }
         }
     };
 
+    const handleReset = async () => {
+        if (window.confirm("¿Estás seguro de reiniciar todo tu progreso?")) {
+            setCheckedItems(new Set());
+            calculateProgress(new Set());
+
+            if (usuario && usuario.idUsuario) {
+                try {
+                    await fetch(`${API_BASE_URL}/progreso/${usuario.idUsuario}`, {
+                        method: 'DELETE'
+                    });
+                } catch (error) {
+                    console.error("Error reseteando progreso", error);
+                }
+            }
+        }
+    };
 
     return (
-        <ChecklistContext.Provider value={{ checkedItems, handleCheckboxChange, isLoading,}}>
+        <ChecklistContext.Provider value={{
+            checkedItems,
+            handleCheckboxChange,
+            handleReset,
+            isLoading,
+            currentPercentage,
+            itemsRemaining,
+            checklistData
+        }}>
             {children}
         </ChecklistContext.Provider>
     );

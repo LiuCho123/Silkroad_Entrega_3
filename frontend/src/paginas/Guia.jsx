@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import '/src/style.css';
 
 const API_URL = "http://localhost:8082/api/guia";
 

@@ -1,57 +1,70 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../data/AuthContext';
 import { useChecklist } from '../data/ChecklistContext';
-import './RankingPage.css';
+import '/src/style.css';
+
+const API_CUENTAS = "http://localhost:8080/api/usuarios";
+const API_JUEGO   = "http://localhost:8082/api/checklist/ranking";
 
 function RankingPage() {
-    const { currentUser } = useAuth();
-    const { currentPercentage, isLoading: checklistLoading } = useChecklist();
+    const { usuario } = useAuth();
+    const { checklistData } = useChecklist();
 
-
-    const [allUsers, setAllUsers] = useState([]);
+    const [rankingReal, setRankingReal] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        if (checklistLoading) return;
-
-        const simulatedUsers = [
-            { name: 'Hornet', score: 112.00 },
-            { name: 'Zote el Todopoderoso', score: 111.99 },
-            { name: 'Quirrel', score: 98.50 },
-            { name: 'Cloth', score: 85.25 },
-            { name: 'Cornifer', score: 50.75 },
-            { name: 'Iselda', score: 25.00 },
-        ];
-
-        let realUser = null;
-
-        if (currentUser) {
-
-            realUser = {
-                name: `${currentUser.nombreUsuario || currentUser.username} (Tú)`,
-                score: parseFloat(currentPercentage.toFixed(2)), // Asegurar 2 decimales
-                isCurrentUser: true
-            };
-        } else {
-            realUser = {
-                name: "Invitado (Tú)",
-                score: 0.00,
-                isCurrentUser: true
-            };
+    const calcularTotalItems = () => {
+        let total = 0;
+        if (checklistData) {
+            checklistData.forEach(cat => total += cat.items.length);
         }
+        return total > 0 ? total : 40;
+    };
 
-        const users = [...simulatedUsers, realUser].sort((a, b) => b.score - a.score);
+    useEffect(() => {
+        const fetchDatos = async () => {
+            try {
+                const [resUsuarios, resPuntajes] = await Promise.all([
+                    fetch(API_CUENTAS),
+                    fetch(API_JUEGO)
+                ]);
 
-        setAllUsers(users.slice(0, 7));
-        setLoading(false);
+                if (resUsuarios.ok && resPuntajes.ok) {
+                    const usuarios = await resUsuarios.json();
+                    const puntajes = await resPuntajes.json();
 
-    }, [currentUser, currentPercentage, checklistLoading]);
+                    const totalItemsPosibles = calcularTotalItems();
+
+                    const tablaRanking = puntajes.map(puntaje => {
+                        const usuarioEncontrado = usuarios.find(u => u.idUsuario === puntaje.idUsuario);
+
+                        const porcentaje = (puntaje.cantidadItems / totalItemsPosibles) * 112;
+
+                        return {
+                            id: puntaje.idUsuario,
+                            name: usuarioEncontrado ? usuarioEncontrado.nombreUsuario : "Usuario Desconocido",
+                            score: Math.min(porcentaje, 112),
+                            isCurrentUser: usuario && usuario.idUsuario === puntaje.idUsuario
+                        };
+                    });
+
+                    setRankingReal(tablaRanking);
+                }
+            } catch (error) {
+                console.error("Error cargando ranking:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchDatos();
+    }, [usuario, checklistData]);
 
 
     if (loading) {
         return (
             <div className="container ranking-container text-center">
-                <h1 className="text-white">Cargando Ranking...</h1>
+                <h1 className="text-white">Cargando Ranking Global...</h1>
             </div>
         );
     }
@@ -59,7 +72,7 @@ function RankingPage() {
     return (
         <div className="container ranking-container">
             <h1 className="text-white mb-3">Ranking de Hallownest</h1>
-            <p className="text-white-50 mb-4">Tu progreso en tiempo real comparado con otros viajeros.</p>
+            <p className="text-white-50 mb-4">Los viajeros más dedicados del reino.</p>
 
             <ul className="ranking-list">
                 <li className="ranking-header">
@@ -68,16 +81,22 @@ function RankingPage() {
                     <span className="score">Progreso</span>
                 </li>
 
-                {allUsers.map((user, index) => (
-                    <li
-                        key={user.name + index}
-                        className={`ranking-item ${user.isCurrentUser ? 'current-user' : ''}`}
-                    >
-                        <span className="rank">{index + 1}</span>
-                        <span className="name">{user.name}</span>
-                        <span className="score">{user.score.toFixed(2)}%</span>
-                    </li>
-                ))}
+                {rankingReal.length === 0 ? (
+                    <li className="text-white text-center mt-3">Nadie ha guardado progreso aún.</li>
+                ) : (
+                    rankingReal.map((user, index) => (
+                        <li
+                            key={user.id}
+                            className={`ranking-item ${user.isCurrentUser ? 'current-user' : ''}`}
+                        >
+                            <span className="rank">{index + 1}</span>
+                            <span className="name">
+                                {user.name} {user.isCurrentUser ? '(Tú)' : ''}
+                            </span>
+                            <span className="score">{user.score.toFixed(2)}%</span>
+                        </li>
+                    ))
+                )}
             </ul>
         </div>
     );
