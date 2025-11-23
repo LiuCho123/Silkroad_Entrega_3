@@ -7,11 +7,10 @@ import lombok.NoArgsConstructor;
 
 @Data
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 public class GuiaSeccionDTO {
+    private String seccionId;
     private String titulo;
-    private String contenido;
-    private Integer orden;
-    private String imagenUrl;
+    private String contenidoHtml;
 }

@@ -4,13 +4,15 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import java.util.List;
 
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ActualizarProgresoDTO {
-    private Integer idUsuario;
-    private String itemId;
-    private boolean marcado;
+public class PreguntaDTO {
+    private Integer id;
+    private String pregunta;
+    private List<String> opciones;
+    private String respuestaCorrecta;
 }

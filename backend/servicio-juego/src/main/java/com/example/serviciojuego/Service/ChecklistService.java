@@ -18,7 +18,6 @@ public class ChecklistService {
         return checklistRepository.findAll();
     }
 
-    // Crear un nuevo ítem (para poblar la BD)
     public ChecklistItem crearItem(ChecklistItemDTO request) {
         if (checklistRepository.findByItemId(request.getItemId()).isPresent()) {
             throw new RuntimeException("El ítem con ID " + request.getItemId() + " ya existe.");

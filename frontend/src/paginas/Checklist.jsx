@@ -24,6 +24,15 @@ function ChecklistPage() {
     );
   }
 
+    if (!checklistData || checklistData.length === 0) {
+        return (
+            <div className="container">
+                <h1>No se pudo cargar el checklist.</h1>
+                <p>Verifica que el servicio de juego (Puerto 8082) esté corriendo.</p>
+            </div>
+        );
+    }
+
   return (
     <div className="container">
       <h1>Medidor Progreso 112%</h1>
