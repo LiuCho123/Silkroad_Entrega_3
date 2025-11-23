@@ -8,20 +8,13 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "guia_seccion")
-public class GuiaSeccion {
+@Table(name = "opcion_trivia")
+public class Opcion {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(nullable = false, unique = true)
-    private String seccionId;
-
     @Column(nullable = false)
-    private String titulo;
-
-    @Lob
-    @Column(nullable = false, columnDefinition = "TEXT")
-    private String contenidoHtml;
+    private String textoOpcion;
 }

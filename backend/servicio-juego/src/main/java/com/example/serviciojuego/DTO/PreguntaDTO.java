@@ -4,13 +4,15 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import java.util.List;
 
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class GuiaSeccionDTO {
-    private String seccionId;
-    private String titulo;
-    private String contenidoHtml;
+public class PreguntaDTO {
+    private Integer id;
+    private String pregunta;
+    private List<String> opciones;
+    private String respuestaCorrecta;
 }
